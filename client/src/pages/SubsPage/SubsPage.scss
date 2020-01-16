@@ -1,0 +1,12 @@
+.loader {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: rgb(82, 199, 228);
+}
+.albums-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
