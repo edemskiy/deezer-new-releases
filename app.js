@@ -7,10 +7,15 @@ const PORT = process.env.PORT || 5000;
 
 app.use(express.json());
 
+const MILLISECONDS_IN_A_DAY = 86400000;
+
 app.get("/albums", (req, res) => {
-  let twoMonthAgoDate = new Date(new Date().getTime() - 86400000 * 90)
+  let threeMonthAgoDate = new Date(
+    new Date().getTime() - MILLISECONDS_IN_A_DAY * 90
+  )
     .toISOString()
-    .slice(0, 10);
+    .slice(0, 10); // to get 'yyyy-mm-dd' date
+
   let artistsArr = [];
   rp("https://api.deezer.com/user/2281251184/artists")
     .then(data => JSON.parse(data).data)
@@ -34,7 +39,7 @@ app.get("/albums", (req, res) => {
         .flat()
         .filter(
           album =>
-            album.release_date > twoMonthAgoDate &&
+            album.release_date > threeMonthAgoDate &&
             !album.title.toLowerCase().includes("remix")
         )
         .sort((a, b) => (a.release_date <= b.release_date ? 1 : -1));
