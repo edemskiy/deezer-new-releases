@@ -19,6 +19,9 @@ export function SubsPage() {
   }, [fetchAlbums]);
 
   function onTypeChange(event) {
+    if (event.currentTarget === event.target) {
+      return;
+    }
     const activeButton = event.currentTarget.querySelector(".active");
     if (activeButton) {
       activeButton.classList.toggle("active");
