@@ -1,10 +1,8 @@
 import React, { useEffect, useCallback, useState } from "react";
 import { useRequest } from "../../hooks/request";
 import CircularProgress from "@material-ui/core/CircularProgress";
-
-import "./SubsPage.scss";
 import { Album } from "../../components/Album";
-import { useRef } from "react";
+import "./SubsPage.scss";
 
 export function SubsPage() {
   const [albums, setAlbums] = useState([]);
