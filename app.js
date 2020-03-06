@@ -5,46 +5,46 @@ const rp = require("request-promise");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
+const {
+  MY_DEEZER_ID,
+  getDaysBeforeNowDate,
+  getUserArtistsUrl,
+  getArtistAlbumsUrl
+} = require("./utils");
+
 app.use(express.json());
 
-const MILLISECONDS_IN_A_DAY = 86400000;
+app.get("/albums", async (req, res) => {
+  try {
+    const threeMonthAgoDateString = getDaysBeforeNowDate(90)
+      .toISOString()
+      .slice(0, 10);
+    let response = await rp(getUserArtistsUrl(MY_DEEZER_ID));
+    let artists = JSON.parse(response).data;
 
-app.get("/albums", (req, res) => {
-  let threeMonthAgoDate = new Date(
-    new Date().getTime() - MILLISECONDS_IN_A_DAY * 90
-  )
-    .toISOString()
-    .slice(0, 10); // to get 'yyyy-mm-dd' date
+    let allAlbums = await Promise.all(
+      artists.map(artist => rp(getArtistAlbumsUrl(artist.id)))
+    );
 
-  let artistsArr = [];
-  rp("https://api.deezer.com/user/2281251184/artists")
-    .then(data => JSON.parse(data).data)
-    .then(artists => {
-      artistsArr = [...artists];
-      return Promise.all(
-        artists.map(artist =>
-          rp(`https://api.deezer.com/artist/${artist.id}/albums`)
-        )
-      );
-    })
-    .then(allAlbums => {
-      const latest_releases = allAlbums
-        .map((artistAlbums, i) =>
-          JSON.parse(artistAlbums).data.map(album => ({
-            ...album,
-            artistName: artistsArr[i].name,
-            artistId: artistsArr[i].id
-          }))
-        )
-        .flat()
-        .filter(
-          album =>
-            album.release_date > threeMonthAgoDate &&
-            !album.title.toLowerCase().includes("remix")
-        )
-        .sort((a, b) => (a.release_date <= b.release_date ? 1 : -1));
-      res.status(200).send(latest_releases);
-    });
+    let latest_releases = allAlbums
+      .map((artistAlbums, i) =>
+        JSON.parse(artistAlbums).data.map(album => ({
+          ...album,
+          artistName: artists[i].name,
+          artistId: artists[i].id
+        }))
+      )
+      .flat()
+      .filter(
+        album =>
+          album.release_date > threeMonthAgoDateString &&
+          !album.title.toLowerCase().includes("remix")
+      )
+      .sort((a, b) => (a.release_date <= b.release_date ? 1 : -1));
+    res.status(200).send(latest_releases);
+  } catch (e) {
+    res.status(500).send({ message: "Something wrong", e });
+  }
 });
 
 if (process.env.NODE_ENV === "production") {

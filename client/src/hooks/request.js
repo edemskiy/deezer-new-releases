@@ -18,15 +18,11 @@ export function useRequest() {
       }
       return fetch(url, { method, body, headers })
         .then(response => {
-          if (!response.ok) {
-            responseOK = false;
-          }
+          responseOK = response.ok;
           return response.json();
         })
         .then(data => {
-          if (!responseOK) {
-            setError(data.message);
-          }
+          if (!responseOK) setError(data.message);
           return data;
         })
         .catch(err => {

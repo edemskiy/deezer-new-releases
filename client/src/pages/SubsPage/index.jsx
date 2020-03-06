@@ -29,7 +29,6 @@ export function SubsPage() {
     event.target.classList.toggle("active");
     setActiveTypeFilter(event.target.dataset.record_type);
   }
-
   return (
     <>
       {isLoading ? (
