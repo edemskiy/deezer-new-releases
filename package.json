@@ -4,7 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "ts-node --files app.js",
+    "start": "ts-node --files app.ts",
     "dev": "nodemon --exec ts-node --files app.ts",
     "heroku-postbuild": "cd client && npm install && npm run build"
   },

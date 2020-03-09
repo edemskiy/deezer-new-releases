@@ -15,9 +15,6 @@ const PORT = process.env.PORT || 5000;
 app.use(express.json());
 app.get("/albums", async (_req: Request, res: Response) => {
   try {
-    const threeMonthAgoDate: string = getDaysBeforeNowDate(90)
-      .toISOString()
-      .slice(0, 10);
     let response: string = await rp(getUserArtistsUrl(MY_DEEZER_ID));
     let artists: any[] = JSON.parse(response).data;
 
@@ -25,9 +22,13 @@ app.get("/albums", async (_req: Request, res: Response) => {
       artists.map(artist => rp(getArtistAlbumsUrl(artist.id)))
     );
 
+    const threeMonthAgoDate: string = getDaysBeforeNowDate(90)
+      .toISOString()
+      .slice(0, 10);
+
     let latest_releases = allAlbums
-      .map((artistAlbums: string, i: number) =>
-        JSON.parse(artistAlbums).data.map((album: object) => ({
+      .map((artistAlbums, i) =>
+        JSON.parse(artistAlbums).data.map((album: any) => ({
           ...album,
           artistName: artists[i].name,
           artistId: artists[i].id
