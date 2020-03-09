@@ -4,8 +4,9 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "start": "ts-node --files app.ts",
+    "start": "node build/app.js",
     "dev": "nodemon --exec ts-node --files app.ts",
+    "build": "tsc",
     "heroku-postbuild": "cd client && npm install && npm run build"
   },
   "author": "",
